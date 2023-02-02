@@ -1,22 +1,27 @@
 from .models import Product
 from .serializers import ProductSerializer
+from rest_framework.decorators import api_view
+from django.forms.models import model_to_dict
 from .authentication import TokenAuthentication
-from rest_framework import generics, mixins,permissions
-from api.permissions import IsStaffPermission
+from rest_framework import generics, mixins
+#from api.permissions import IsStaffPermission
+from api.mixin import StaffEditorPermissionsMixin
 
-#if __name__ == '__main__':
-#from music_controller.api.mixin import StaffEditorPermissionsMixin
+
 
 class DetailProductView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class ListCreateProductView(generics.ListCreateAPIView):
+class ListCreateProductView(
+    StaffEditorPermissionsMixin,
+    generics.ListCreateAPIView):
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 #   authentication_classes = [authentication.SessionAuthentication]
     #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication] #ajout dans default settings
-    permission_classes = [permissions.IsAdminUser, IsStaffPermission] #ajouter dans StaffEditorPermissionsMixin
+    #permission_classes = [permissions.IsAdminUser, IsStaffPermission] #ajouter dans StaffEditorPermissionsMixin
     #IsStaffPermission
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -26,7 +31,10 @@ class ListCreateProductView(generics.ListCreateAPIView):
         if content is None:
             content= name
         serializer.save(content=content)
-class UpdateProductView(generics.UpdateAPIView):
+class UpdateProductView(
+    StaffEditorPermissionsMixin,
+    generics.UpdateAPIView):
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     def perform_update(self, serializer):
@@ -35,7 +43,10 @@ class UpdateProductView(generics.UpdateAPIView):
         if content is None:
             content= name
         serializer.save(content=content)
-class DeleteProductView(generics.DestroyAPIView):
+class DeleteProductView(
+    StaffEditorPermissionsMixin,
+    generics.DestroyAPIView):
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -44,7 +55,11 @@ class ListProductView(generics.ListAPIView):
     serializer_class = ProductSerializer
     def get_queryset(self):
         return super().get_queryset()
-
+    #possible de faire un filtre sur le queryset en surchargeant def queryset
+    '''
+    def get_queryset(self):
+        return super().get_queryset().filter(name='Avocat')
+    '''
 class ProductMixinsView(
         generics.GenericAPIView, #post
         mixins.CreateModelMixin,
@@ -66,7 +81,7 @@ class ProductMixinsView(
             content= name
         serializer.save(content=content)
     def get(self, request, *args, **kwargs):
-
+        #méthode get est identique pour list et retrieve
         pk = kwargs.get('pk')
         if pk is not None:
             return self.retrieve(request, *args, **kwargs)
@@ -80,10 +95,11 @@ class ProductMixinsView(
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+
+
 '''
 @api_view(['GET'])
 def api_view(request, *args, **kwargs):
