@@ -26,5 +26,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('spotify/', include('spotify.urls')),
     path('apiViewset/', include(router.urls)),
-    path('product/', include('product.urls'))
+    path('product/', include('product.urls')) # Appel de view qui hérite de generics.Retrieve, Create, Update
     ]
