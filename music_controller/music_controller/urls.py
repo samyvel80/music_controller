@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from product.viewset import ProductViewset
+#from product.views import ProViewset
 from api.views import RoomViewset
 from rest_framework import routers
 from django.contrib import admin
@@ -20,11 +22,14 @@ from django.urls import path, include
 
 router = routers.SimpleRouter()
 router.register('roomViewset', RoomViewset, basename='room')
+#router.register('ProViewset', ProViewset, basename='proviewset')
+router.register('ProductViewset', ProductViewset, basename='proviewset')
 urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('spotify/', include('spotify.urls')),
     path('apiViewset/', include(router.urls)),
-    path('product/', include('product.urls')) # Appel de view qui hérite de generics.Retrieve, Create, Update
+    path('product/', include('product.urls')), # Appel de view qui hérite de generics.Retrieve, Create, Update
+    path('product/v2/', include('music_controller.routers')),
     ]

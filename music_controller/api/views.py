@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from .serializers import RoomSerializers
 from .models import Room
 import json
@@ -39,7 +39,7 @@ class RoomView(APIView):
 
 
 #class RoomView(generics.ListAPIView):
-class RoomViewset(ReadOnlyModelViewSet):
+class RoomViewset(ModelViewSet):
 
     serializer_class = RoomSerializers
 

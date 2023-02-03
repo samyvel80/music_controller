@@ -6,6 +6,7 @@ from .authentication import TokenAuthentication
 from rest_framework import generics, mixins
 #from api.permissions import IsStaffPermission
 from api.mixin import StaffEditorPermissionsMixin
+from rest_framework import viewsets
 
 
 
@@ -99,7 +100,17 @@ class ProductMixinsView(
     serializer_class = ProductSerializer
     lookup_field = 'pk'
 
-
+class ProViewset(viewsets.ModelViewSet):
+    """
+    get -> list -> Queryset
+    get -> retrieve
+    post -> create
+    put -> update
+    patch -> partial update
+    delete -> destroy
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 '''
 @api_view(['GET'])
 def api_view(request, *args, **kwargs):
