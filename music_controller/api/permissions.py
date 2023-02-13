@@ -17,7 +17,7 @@ class IsStaffPermission(permissions.DjangoModelPermissions):
         'PATCH': ['%(app_label)s.change_%(model_name)s'],
         'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
-# Def Has permission est insuffisant : un membre staff avec l'unique autorisation pour voir peut aussi créer un produit
+# Def Has permission est insuffisant : un membre avec l'unique autorisation staff peut voir et peut aussi créer un produit
 # ListCreateAPIView hérite de plusieurs mixin dant perms_map
 ''' def has_permission(self, request, view):
         user = request.user

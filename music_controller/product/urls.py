@@ -7,15 +7,15 @@ urlpatterns = [
     path('<int:pk>/', DetailProductView.as_view() ),
 
     #path('create/', CreateProductView.as_view()),
-    path('<int:pk>/update/', UpdateProductView.as_view()),
+    path('<int:pk>/update/', UpdateProductView.as_view(),name='update'),
     path('<int:pk>/delete/', DeleteProductView.as_view()),
 
     path('create-list/', ListCreateProductView.as_view()),
-    path('listMixin/', ProductMixinsView.as_view()), #get      #get
-    path('<int:pk>/detailMixin', ProductMixinsView.as_view()), #get
-    path('createMixin/', ProductMixinsView.as_view()),         #post
-    path('<int:pk>/updateMixin', ProductMixinsView.as_view()), #put
-    path('<int:pk>/deleteMixin', ProductMixinsView.as_view()), #delete
+   # path('listMixin/', ProductMixinsView.as_view()), #get      #get
+    path('<int:pk>/detailMixin', ProductMixinsView.as_view(),name='productdetail'), #get
+   # path('createMixin/', ProductMixinsView.as_view()),         #post
+   # path('<int:pk>/updateMixin', ProductMixinsView.as_view()), #put
+   # path('<int:pk>/deleteMixin', ProductMixinsView.as_view()), #delete
 
 
 

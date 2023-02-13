@@ -2,7 +2,8 @@ from rest_framework.routers import DefaultRouter
 from product.viewset import ProductViewset, ProductListRetrieveViewset
 
 router = DefaultRouter()
-router.register('Product', ProductListRetrieveViewset, basename='product-a')
+router.register('ListRetrieve', ProductListRetrieveViewset, basename='ListRetrieve')
+router.register('ProductViewset', ProductViewset, basename='Product')
 print(router.urls)
 urlpatterns = router.urls
 

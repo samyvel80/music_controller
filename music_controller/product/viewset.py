@@ -1,6 +1,7 @@
 from .models import Product
 from .serializers import ProductSerializer
 from rest_framework import viewsets,mixins
+from api.mixin import StaffEditorPermissionsMixin
 
 class ProductViewset(viewsets.ModelViewSet):
     """

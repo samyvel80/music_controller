@@ -5,7 +5,7 @@ from django.forms.models import model_to_dict
 from .authentication import TokenAuthentication
 from rest_framework import generics, mixins
 #from api.permissions import IsStaffPermission
-from api.mixin import StaffEditorPermissionsMixin
+from api.mixin import StaffEditorPermissionsMixin, UserQuerrySetMixin
 from rest_framework import viewsets
 
 
@@ -15,25 +15,39 @@ class DetailProductView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 
 class ListCreateProductView(
-    StaffEditorPermissionsMixin,
+    #StaffEditorPermissionsMixin,
+    UserQuerrySetMixin,# surcharge du Queryset pour retourner les produits filtrés par user
     generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    user_field = 'user' # on surcharge le mixin par la valeur 'user'
 #   authentication_classes = [authentication.SessionAuthentication]
-    #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication] #ajout dans default settings
+    #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication] #ajout dans défault settings
     #permission_classes = [permissions.IsAdminUser, IsStaffPermission] #ajouter dans StaffEditorPermissionsMixin
     #IsStaffPermission
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+
+
+    # pour filtrer par user Méthode 1
+    def get_queryset(self):
+        qs = super().get_queryset()
+        user = self.request.user
+        return qs.filter(user=user)
+
+    #def get(self, request, *args, **kwargs):
+    #    return self.list(request, *args, **kwargs)
     def perform_create(self, serializer):
+        email = serializer.validated_data.pop('email')
+        print("view_performcreate")
+        print(email)
         name = serializer.validated_data.get('name')
         content = serializer.validated_data.get('content') or None
         if content is None:
             content= name
-        serializer.save(content=content)
+        serializer.save(content=content, user=self.request.user) # user=self.request.user permet d'ajouter le user qui a creer le produit
 class UpdateProductView(
     StaffEditorPermissionsMixin,
+    UserQuerrySetMixin,
     generics.UpdateAPIView):
 
     queryset = Product.objects.all()
@@ -46,6 +60,7 @@ class UpdateProductView(
         serializer.save(content=content)
 class DeleteProductView(
     StaffEditorPermissionsMixin,
+    UserQuerrySetMixin,
     generics.DestroyAPIView):
 
     queryset = Product.objects.all()
@@ -54,8 +69,7 @@ class DeleteProductView(
 class ListProductView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    def get_queryset(self):
-        return super().get_queryset()
+
     #possible de faire un filtre sur le queryset en surchargeant def queryset
     '''
     def get_queryset(self):
@@ -111,7 +125,21 @@ class ProViewset(viewsets.ModelViewSet):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
 '''
+@api_view(['GET','POST'])
+def api_view(request, *args, **kwargs):
+    if request.method != "POST"
+        return Response({"detail:method not allowed"})
+    query = Product.objects.all().order_by('?').first()
+    data = {}
+    if query:
+        #data = model_to_dict(query, fields=('name', 'content', 'price', 'get_discount'))
+        serializer = ProductSerializer(query)
+        data = serializer.data
+         #Response => Serialise les donnees dict-> en Json
+    return Response(data)
+
 @api_view(['GET'])
 def api_view(request, *args, **kwargs):
     query = Product.objects.all().order_by('?').first()
@@ -120,7 +148,7 @@ def api_view(request, *args, **kwargs):
         #data = model_to_dict(query, fields=('name', 'content', 'price', 'get_discount'))
         serializer = ProductSerializer(query)
         data = serializer.data
-        # Response => Serialise les donnees dict-> en Json
+         #Response => Serialise les donnees dict-> en Json
     return Response(data)
 
 @api_view(['POST'])

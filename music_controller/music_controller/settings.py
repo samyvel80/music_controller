@@ -37,11 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #third party api service
+    'algoliasearch_django',
+    #third party
     'rest_framework',
     'rest_framework.authtoken', # puis faire makemigrations et migrate : app our l'ajout du authtoken
     'spotify.apps.SpotifyConfig',
+    #our app
     'api.apps.ApiConfig',
     'product.apps.ProductConfig',
+    'search.apps.SearchConfig',
+
 
 ]
 
@@ -53,7 +59,14 @@ REST_FRAMEWORK = {
 
     "DEFAULT_PERMISSION_CLASSES":[
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5
+
+}
+ALGOLIA = {
+    'APPLICATION_ID': 'H5LD8DDPLY',
+    'API_KEY': '67a1d442d9cee960dedb24b121ec47e6'
 }
 
 MIDDLEWARE = [
