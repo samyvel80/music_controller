@@ -4,26 +4,22 @@ from api.serializer import UserPublicSerializer
 from rest_framework.reverse import reverse
 from .validators import validate_unique_name
 
-class UserProductInlineSerialier(serializers.Serializer):
-   # url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
+class UserProductinLineSerializer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
     email = serializers.EmailField(write_only=True)
     name = serializers.CharField()
 
 class ProductSerializer(serializers.ModelSerializer):
     my_discount = serializers.SerializerMethodField(read_only=True)
-    #url = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
-    #owner = UserProductInlineSerialier(source= 'user.product_set.all',many=True, read_only=True)
-    #owner = UserPublicSerializer(source= 'user', read_only=True)
+    owner = UserProductinLineSerializer(source='user.product_set.all', many=True, read_only=True)# on entre dans source la Foreign KEY
     email= serializers.EmailField(write_only=True)
     name = serializers.CharField(validators=[validate_unique_name])
-    #owner = serializers.SerializerMethodField(read_only=True)
 
-    #user_name = serializers.CharField(source="user.username", read_only=True)#8h58 dans tuto, on bloque l'apparition du champ dans create
-    #name = serializers.CharField(validators=[validate_unique_name])
+
     class Meta:
         model = Product
-        fields = ('email', 'url', 'name', 'content', 'price', 'my_discount')
+        fields = ('owner', 'email', 'url', 'name', 'content', 'price', 'my_discount')
 
     def validate_name(self, value):
         request= self.context.get('request')
@@ -35,6 +31,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
     '''
+      #owner = serializers.SerializerMethodField(read_only=True)
+       #owner = UserProductInlineSerialier(source= 'user.product_set.all',many=True, read_only=True)
+    #owner = UserPublicSerializer(source= 'user', read_only=True)
+      #url = serializers.SerializerMethodField(read_only=True)
+    #user_name = serializers.CharField(source="user.username", read_only=True)#8h58 dans tuto, on bloque l'apparition du champ dans create
+    #name = serializers.CharField(validators=[validate_unique_name])
     def create(self, validated_data):
         print(validated_data)
         email = validated_data.pop('email')

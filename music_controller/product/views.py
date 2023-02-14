@@ -16,12 +16,12 @@ class DetailProductView(generics.RetrieveAPIView):
 
 class ListCreateProductView(
     #StaffEditorPermissionsMixin,
-    UserQuerrySetMixin,# surcharge du Queryset pour retourner les produits filtrés par user
+    #UserQuerrySetMixin,# surcharge du Queryset pour retourner les produits filtrés par user
     generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    user_field = 'user' # on surcharge le mixin par la valeur 'user'
+    #user_field = 'user' # on surcharge le mixin par la valeur 'user'
 #   authentication_classes = [authentication.SessionAuthentication]
     #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication] #ajout dans défault settings
     #permission_classes = [permissions.IsAdminUser, IsStaffPermission] #ajouter dans StaffEditorPermissionsMixin
