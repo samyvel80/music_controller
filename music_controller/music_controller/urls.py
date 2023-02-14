@@ -19,6 +19,11 @@ from api.views import RoomViewset
 from rest_framework import routers
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 router = routers.SimpleRouter()
 router.register('roomViewset', RoomViewset, basename='room')
@@ -32,4 +37,7 @@ urlpatterns = [
     path('apiViewset/', include(router.urls)),
     path('product/', include('product.urls')), # Appel de view qui hérite de generics.Retrieve, Create, Update
     path('product/v2/', include('music_controller.routers')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     ]

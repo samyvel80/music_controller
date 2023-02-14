@@ -1,7 +1,7 @@
 from .permissions import IsStaffPermission
 from rest_framework import permissions
 class StaffEditorPermissionsMixin():
-    permission_classes = [permissions.IsAdminUser, IsStaffPermission]
+    permission_classes = [permissions.IsAdminUser, IsStaffPermission] # IsStaffPermission est une classe permission spécifique dans le fichier api.permission
 
 class UserQuerrySetMixin():
     user_field = 'user'

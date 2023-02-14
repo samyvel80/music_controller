@@ -10,3 +10,4 @@ sqlparse==0.4.3
 typing_extensions==4.4.0
 urllib3==1.26.14
 algoliasearch-django>=2.0,<3.0
+djangorestframework-simplejwt

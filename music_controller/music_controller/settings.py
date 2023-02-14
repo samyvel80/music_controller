@@ -12,6 +12,17 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+from datetime import timedelta
+...
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=10),
+}
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', # puis faire makemigrations et migrate : app our l'ajout du authtoken
     'spotify.apps.SpotifyConfig',
+    'rest_framework_simplejwt',
     #our app
     'api.apps.ApiConfig',
     'product.apps.ProductConfig',
@@ -54,7 +66,8 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES":[
         "rest_framework.authentication.SessionAuthentication",
-        "product.authentication.TokenAuthentication",
+        "product.authentication.TokenAuthentication", # la classe TokenAuthentication se trouve dans le fichier product.authentication
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 
     "DEFAULT_PERMISSION_CLASSES":[
@@ -66,7 +79,7 @@ REST_FRAMEWORK = {
 }
 ALGOLIA = {
     'APPLICATION_ID': 'H5LD8DDPLY',
-    'API_KEY': '67a1d442d9cee960dedb24b121ec47e6'
+    'API_KEY': '67a1d442d9cee960dedb24b121ec47e6' # adminAPI KEY search
 }
 
 MIDDLEWARE = [
@@ -77,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'music_controller.urls'

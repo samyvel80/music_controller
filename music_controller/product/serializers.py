@@ -27,7 +27,7 @@ class UserProductinLineSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     my_discount = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
-    owner = UserPublicSerializer(source= 'user', read_only=True)
+    #owner = UserPublicSerializer(source= 'user', read_only=True)
     #owner = UserProductinLineSerializer(source='user.product_set.all', many=True, read_only=True)# on entre dans source la Foreign KEY
     email= serializers.EmailField(write_only=True)
     name = serializers.CharField(validators=[validate_unique_name])
@@ -35,7 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('owner', 'email', 'url', 'name', 'content', 'price', 'my_discount')
+        fields = ('email', 'url', 'name', 'content', 'price', 'my_discount')
 
     def validate_name(self, value):
         request= self.context.get('request')

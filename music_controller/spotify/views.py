@@ -8,6 +8,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from .util import get_user_tokens, update_or_create_user_tokens
 
+
+
 class AuthURL(APIView):
     def get(self,request, format= None):
         scopes = 'user-read_playback-state user-modify-playback-state user-read-currently-playing'

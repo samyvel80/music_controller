@@ -8,11 +8,18 @@ from rest_framework import generics, mixins
 #from api.permissions import IsStaffPermission
 from api.mixin import StaffEditorPermissionsMixin, UserQuerrySetMixin
 from rest_framework import viewsets
-
-class UserListView(generics.ListAPIView):
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from . import client
+class UserListView(
+    #StaffEditorPermissionsMixin,
+    generics.ListAPIView,
+    ):
     queryset = User.objects.all()
     print(queryset)
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
 
 class DetailProductView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
@@ -21,7 +28,7 @@ class DetailProductView(generics.RetrieveAPIView):
 
 
 class ListCreateProductView(
-    #StaffEditorPermissionsMixin,
+    StaffEditorPermissionsMixin,
     #UserQuerrySetMixin,# surcharge du Queryset pour retourner les produits filtrés par user
     generics.ListCreateAPIView):
 
@@ -51,6 +58,35 @@ class ListCreateProductView(
         if content is None:
             content= name
         serializer.save(content=content, user=self.request.user) # user=self.request.user permet d'ajouter le user qui a creer le produit
+
+
+
+class SearchListView(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q')
+        if not query:
+            return Response("Aucun produit trouve")
+        result = client.perform_search(query)
+        return Response(result)
+class SearchOldListView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q= self.request.GET.get('q')
+        result = Product.objects.none()
+        if q is not None:
+            user = None
+            if self.request.user.is_authenticated:
+                user= self.request.user
+                result = qs.search(q,user)
+        return result
+
+
+
+
+
 class UpdateProductView(
     StaffEditorPermissionsMixin,
     UserQuerrySetMixin,
