@@ -1,5 +1,6 @@
 from .models import Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, UserSerializer
+from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from django.forms.models import model_to_dict
 from .authentication import TokenAuthentication
@@ -8,11 +9,16 @@ from rest_framework import generics, mixins
 from api.mixin import StaffEditorPermissionsMixin, UserQuerrySetMixin
 from rest_framework import viewsets
 
-
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    print(queryset)
+    serializer_class = UserSerializer
 
 class DetailProductView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
 
 class ListCreateProductView(
     #StaffEditorPermissionsMixin,

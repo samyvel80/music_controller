@@ -3,6 +3,21 @@ from .models import Product
 from api.serializer import UserPublicSerializer
 from rest_framework.reverse import reverse
 from .validators import validate_unique_name
+from django.contrib.auth.models import User
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    product = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = User
+        fields = ('username', 'id', 'product')
+    def get_product(self,obj):
+        request = self.context.get('request') # on récupère le request
+        user = obj
+        query_set = obj.product_set.all()#la liste des produits d'un utilisateur user.product_set.all() (inverse relation)
+        print(query_set)
+        return UserProductinLineSerializer(query_set, many=True, context={'request':request}).data
+
 
 class UserProductinLineSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
@@ -12,7 +27,8 @@ class UserProductinLineSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     my_discount = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
-    owner = UserProductinLineSerializer(source='user.product_set.all', many=True, read_only=True)# on entre dans source la Foreign KEY
+    owner = UserPublicSerializer(source= 'user', read_only=True)
+    #owner = UserProductinLineSerializer(source='user.product_set.all', many=True, read_only=True)# on entre dans source la Foreign KEY
     email= serializers.EmailField(write_only=True)
     name = serializers.CharField(validators=[validate_unique_name])
 
