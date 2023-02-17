@@ -12,13 +12,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from . import client
 class UserListView(
-    #StaffEditorPermissionsMixin,
+    StaffEditorPermissionsMixin,
     generics.ListAPIView,
     ):
     queryset = User.objects.all()
     print(queryset)
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class DetailProductView(generics.RetrieveAPIView):

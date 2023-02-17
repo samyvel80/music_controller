@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from product.viewset import ProductViewset
+
 #from product.views import ProViewset
 from api.views import RoomViewset
 from rest_framework import routers
@@ -37,6 +38,7 @@ urlpatterns = [
     path('apiViewset/', include(router.urls)),
     path('product/', include('product.urls')), # Appel de view qui hérite de generics.Retrieve, Create, Update
     path('product/v2/', include('music_controller.routers')),
+    path('api/product/search/', include('search.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
