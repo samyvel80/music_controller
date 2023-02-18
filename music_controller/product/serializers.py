@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product
+from .models import Product, Category
 from api.serializer import UserPublicSerializer
 from rest_framework.reverse import reverse
 from .validators import validate_unique_name
@@ -7,10 +7,7 @@ from django.contrib.auth.models import User
 
 
 
-class UserProductinLineSerializer(serializers.Serializer):
-    url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
-    email = serializers.EmailField(write_only=True)
-    name = serializers.CharField()
+
 
 
 class UserPublicSerializerMethode3(serializers.Serializer):
@@ -39,7 +36,8 @@ class ProductInlineserializerMethode5(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     name = serializers.CharField()
 
-
+class CategoryInLineSerializer(serializers.Serializer):
+    name = serializers.CharField(read_only=True)
 
 
 
@@ -59,26 +57,21 @@ class ProductSerializer(serializers.ModelSerializer):
     ##    return {'username': instance.user.username}
     ## Fin Méthode 2
 
-    ### -------------------- Serialisation Méthode 3 ------------------------
-    #owner = UserPublicSerializerMethode3(source='user', read_only=True)
-
-    #### -------------------- Serialisation Méthode 4 ------------------------
+    ### -------------------- Serialisation Méthode 3 -----------------------------------
+    owner = UserPublicSerializerMethode3(source='user', read_only=True)
+    cat = CategoryInLineSerializer(source='category', read_only=True)
+    #### -------------------- Serialisation Méthode 4 ----------------------------------
     #owner = UserPublicSerializerMethode4(source='user', read_only=True)
-    #### -------------------- Serialisation Méthode 5 ------------------------
+
+    #### -------------------- Serialisation Méthode 5 ----------------------------------
     #owner = ProductInlineserializerMethode5(source='user.product_set.all',many=True)
-
-    #owner = UserPublicSerializer(source= 'user', read_only=True)
-    #owner = UserProductinLineSerializer(source='user.product_set.all', many=True, read_only=True)# on entre dans source la Foreign KEY
-
-
-
 
     class Meta:
         model = Product
-        fields = ('owner', 'email', 'url', 'name', 'content', 'price', 'my_discount', 'public')
+        fields = ('owner','cat', 'email', 'url', 'name', 'content', 'price', 'my_discount', 'public')
 
     def validate_name(self, value):
-        request= self.context.get('request')
+        request = self.context.get('request')
         qs = Product.objects.filter(name__iexact=value)
         if qs.exists():
             raise serializers.ValidationError(f"la produit {value} existé déjà")
@@ -130,15 +123,30 @@ class ProductSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
     id = serializers.IntegerField(read_only=True)
-    #product = serializers.SerializerMethodField(read_only=True)
+    product = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = User
-        fields = ('username', 'id', 'products')
+        fields = ('username', 'id', 'product')
     def get_product(self,obj):
         request = self.context.get('request') # on récupère le request
         user = obj
-        query_set = user.products.all()#la liste des produits d'un utilisateur user.product_set.all() (inverse relation)
+        query_set = user.product_set.all()#la liste des produits d'un utilisateur user.product_set.all() (inverse relation)
         print(query_set)
         return UserProductinLineSerializer(query_set, many=True, context={'request':request}).data
 
+class CategorySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(read_only=True)
+    prod = serializers.SerializerMethodField()
+    class Meta:
+        model = Category
+        fields = ('name','prod')
+        def get_prod(self,instance):
+            request = self.context.get('request')  # on récupère le request
+            qs = instance.product.all()
+            return UserProductinLineSerializer(qs, many=True, context={'request':request}).data
 
+
+class UserProductinLineSerializer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(view_name="productdetail", lookup_field='pk')
+    email = serializers.EmailField(write_only=True)
+    name = serializers.CharField()

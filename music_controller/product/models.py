@@ -22,15 +22,22 @@ class ProductManager(models.Manager):
     def get_queryset(self):
         return ProductQueryset(self.model, using=self._db) # retourne le propre Queryset de la classe ProductQueryset
 # Create your models here.
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=False)
+    def __str__(self):
+        return self.name
 class Product(models.Model):
-    TAGS_LIST = ['fruits', 'voiture', 'electronique']
+    #TAGS_LIST = ['fruits', 'voiture', 'electronique']
     # on_delete : si on supprime l'utilisateur le produit reste avec un user = null
     user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE, related_name='prods')
     name = models.CharField(max_length=100)
     content = models.TextField(null=True,blank=True)
     price = models.DecimalField(max_digits=15, decimal_places=2)
     public = models.BooleanField(default=True)
     objects = ProductManager()
+
 
 
     def get_tags_list(self):

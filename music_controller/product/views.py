@@ -1,5 +1,5 @@
-from .models import Product
-from .serializers import ProductSerializer, UserSerializer
+from .models import Product, Category
+from .serializers import ProductSerializer, UserSerializer, CategorySerializer
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from django.forms.models import model_to_dict
@@ -11,6 +11,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from . import client
+class CategoryListView(
+    StaffEditorPermissionsMixin,
+    generics.ListAPIView,
+    ):
+    queryset = Category.objects.filter(active=True)
+    serializer_class = CategorySerializer
+
 class UserListView(
     StaffEditorPermissionsMixin,
     generics.ListAPIView,
